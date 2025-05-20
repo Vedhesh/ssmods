@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SS+ v1.5</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Outfit", sans-serif;
+      margin: 0; padding: 0;
+    }
+    body, html {
+      height: 100%;
+      background: linear-gradient(135deg, #74ebd5, #9face6);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background: #3b5998;
+      padding: 15px;
+      font-size: 2.2em;
+      font-weight: bold;
+      text-align: center;
+      user-select: none;
+    }
+    nav {
+      background: #4267b2;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+    }
+    nav button {
+      background: #5a78d0;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 15px;
+      font-size: 1em;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    nav button:hover {
+      background: #3b4f91;
+    }
+    .tab {
+      flex: 1;
+      padding: 20px;
+      display: none;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.2);
+    }
+    .tab.active {
+      display: block;
+    }
+    #coinDisplay {
+      font-size: 1.3em;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    #quote {
+      font-style: italic;
+      font-size: 1.4em;
+      text-align: center;
+      margin-top: 20px;
+    }
+    /* Start screen */
+    #startScreen {
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: linear-gradient(135deg, #74ebd5, #9face6);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 2.5em;
+      z-index: 1000;
+      user-select: none;
+    }
+    #startScreen button {
+      margin-top: 30px;
+      padding: 15px 40px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 12px;
+      background: #3b5998;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    #startScreen button:hover {
+      background: #2e4277;
+    }
+
+    /* Timer Circular */
+
+    .base-timer {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin: 30px auto 10px;
+    }
+    .base-timer__svg {
+      transform: scaleX(-1);
+      width: 220px;
+      height: 220px;
+    }
+    .base-timer__circle {
+      fill: none;
+      stroke: none;
+    }
+    .base-timer__path-elapsed {
+      stroke-width: 12px;
+      stroke: rgba(255,255,255,0.2);
+    }
+    .base-timer__path-remaining {
+      stroke-width: 12px;
+      stroke-linecap: round;
+      stroke: #fff;
+      transition: 1s linear stroke-dashoffset;
+      transform-origin: center;
+    }
+
+    /* Timer controls */
+    #timerControls {
+      text-align: center;
+      margin-top: 15px;
+    }
+    #timerControls button {
+      background: #5a78d0;
+      border: none;
+      padding: 10px 15px;
+      margin: 0 5px;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      font-size: 1em;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    #timerControls button:hover:not(:disabled) {
+      background: #3b4f91;
+    }
+    #timerControls button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    #customTimerInput {
+      width: 70px;
+      padding: 7px;
+      font-size: 1em;
+      border-radius: 8px;
+      border: none;
+      margin-right: 10px;
+      text-align: center;
+    }
+
+    /* Cheat Button */
+    #cheatBtn {
+      opacity: 0.5;
+      user-select: none;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1em;
+      margin: 10px auto;
+      display: block;
+      transition: opacity 0.3s;
+    }
+    #cheatBtn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    /* Theme tab */
+    #themeButtons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    #themeButtons button {
+      padding: 10px 20px;
+      font-size: 1.1em;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      user-select: none;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    #themeButtons button.light { background: #f0f0f0; color: #333;}
+    #themeButtons button.navyblue { background: #1a237e; }
+    #themeButtons button.blue { background: #2196f3; }
+    #themeButtons button.dark { background: #121212; }
+    #themeButtons button.gradient { background: linear-gradient(135deg, #74ebd5, #9face6); color: white; }
+    #themeButtons button.reset { background: #888; }
+
+    /* Draw Tab */
+    /* INJECTED CODE FROM BEEB2222 !!!DO NOT TOUCH!!! */
+    #a28MFSIAmiois {
+  position: absolute;
+  z-index: 9;
+  background-color: #f1f1f1;
+  border: 1px solid #d3d3d3;
+  text-align: center;
+}
+.container {
+  position: relative;
+  width: 100%; /* Fill the entire screen */
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.2),
+    rgba(0, 0, 0, 0.1)
+  );
+}
+
+.container::before,
+.container::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    #ff9aa2,
+    /* Soft pink */ #ff483b,
+    /* Light peach */ #ff893b,
+    /* Pastel yellow */ #cbff76,
+    /* Mint green */ #60d2ff,
+    /* Baby blue */ #9c6aff,
+    /* Lavender */ #ff7369,
+    #ff9aa2
+  );
+  transform: translate(-50%, -50%);
+  animation: rotate 8s linear infinite;
+  filter: blur(50px); /* Create a soft glowing effect */
+  opacity: 0.8;
+}
+
+/* Secondary rotating layer for depth */
+.container::after {
+  width: 180%;
+  height: 180%;
+  animation: rotate-reverse 10s linear infinite;
+  opacity: 0.6;
+}
+
+/* Rotating animations */
+@keyframes rotate {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes rotate-reverse {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
+}
+#ja8uJIFA9MJois {
+  padding: 10px;
+  cursor: move;
+  z-index: 10;
+  
+  color: #000000;
+  opacity: 100%;
+}
+    #drawLockedOverlay {
+      position: absolute;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2em;
+      z-index: 10;
+      user-select: none;
+    }
+    #drawLockedOverlay button {
+      margin-top: 12px;
+      background: #3b5998;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: white;
+      user-select: none;
+    }
+    #drawTools {
+      margin-bottom: 12px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    #drawTools > * {
+      font-size: 1em;
+    }
+    #drawTools label {
+      user-select: none;
+    }
+    #drawTools input[type="color"],
+    #drawTools button {
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+      padding: 7px 12px;
+      transition: background-color 0.3s;
+    }
+    #drawTools button:hover {
+      background: #3b5998;
+      color: white;
+    }
+
+    canvas#canvas {
+      border: 2px solid white;
+      background: white;
+      display: block;
+      margin: 0 auto 20px;
+      touch-action: none;
+      border-radius: 12px;
+    }
+    marquee{
+      color:lime;
+      background:black
+    }
+    .card-container {
+  width: 260px;
+  background: linear-gradient(
+    to top right,
+    #975af4,
+    #2f7cf8 40%,
+    #78aafa 65%,
+    #934cff 100%
+  );
+  padding: 4px;
+  border-radius: 0px;
+  display: flex;
+  flex-direction: column;
+}
+.card-container .title-card {
+  display: flex;
+  align-items: center;
+  padding: 16px 18px;
+  justify-content: space-between;
+  color: #fff;
+}
+.card-container .title-card p {
+  font-size: 14px;
+  font-weight: 600;
+  font-style: italic;
+  text-shadow: 2px 2px 6px #2975ee;
+}
+
+.card-container .card-content {
+  width: 100%;
+  height: 100%;
+  background-color: #161a20;
+  border-radius: 30px;
+  color: #838383;
+  font-size: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.card-container .card-content .title {
+  font-weight: 600;
+  color: #bab9b9;
+}
+.card-container .card-content .plain :nth-child(1) {
+  font-size: 36px;
+  color: #fff;
+}
+.card-container .card-content .card-btn {
+  background: linear-gradient(
+    4deg,
+    #975af4,
+    #2f7cf8 40%,
+    #78aafa 65%,
+    #934cff 100%
+  );
+  padding: 8px;
+  border: none;
+  width: 100%;
+  border-radius: 8px;
+  color: white;
+  font-size: 12px;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.6);
+}
+.card-container .card-content .card-btn:hover {
+  color: #ffffff;
+  text-shadow: 0 0 8px #fff;
+  transform: scale(1.03);
+}
+.card-container .card-content .card-btn:active {
+  transform: scale(1);
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Start Screen -->
+  <div id="startScreen">
+    <div>Welcome to SS+</div>
+    <button id="startAppBtn">Start</button>
+  </div>
+
+  <header>StudySphere Plus</header>
+  <marquee behavior="scroll" direction="left">SS+ for versions 1.5 and above !!! Unofficial remix by beeb2222 !!!</marquee>
+  <nav>
+    <button onclick="showTab('home')">Home</button>
+    <button onclick="showTab('timer')">Timer</button>
+    <button onclick="showTab('draw')">Draw</button>
+    <button onclick="showTab('theme')">Theme</button>
+    <button onclick="git()">Support SS+ ☕</button>
+  </nav>
+
+  <!-- Tabs -->
+  <div id="home" class="tab active" >
+    <div id="coinDisplay">Coins: 0</div>
+    <div id="quote"></div>
+  </div>
+  <div id="a28MFSIAmiois">
+  <!-- INJECTED CODE FROM BEEB2222 !!!DO NOT TOUCH!!! -->
+  <div id="ja8uJIFA9MJois" class="container">Mod Menu for v1.5+</div>
+  <div class="card-container">
+  <div class="title-card">
+    <p>MOST POPULAR</p>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+    >
+      <path
+        fill="currentColor"
+        d="M10.277 16.515c.005-.11.187-.154.24-.058c.254.45.686 1.111 1.177 1.412c.49.3 1.275.386 1.791.408c.11.005.154.186.058.24c-.45.254-1.111.686-1.412 1.176s-.386 1.276-.408 1.792c-.005.11-.187.153-.24.057c-.254-.45-.686-1.11-1.176-1.411s-1.276-.386-1.792-.408c-.11-.005-.153-.187-.057-.24c.45-.254 1.11-.686 1.411-1.177c.301-.49.386-1.276.408-1.791m8.215-1c-.008-.11-.2-.156-.257-.062c-.172.283-.421.623-.697.793s-.693.236-1.023.262c-.11.008-.155.2-.062.257c.283.172.624.42.793.697s.237.693.262 1.023c.009.11.2.155.258.061c.172-.282.42-.623.697-.792s.692-.237 1.022-.262c.11-.009.156-.2.062-.258c-.283-.172-.624-.42-.793-.697s-.236-.692-.262-1.022M14.704 4.002l-.242-.306c-.937-1.183-1.405-1.775-1.95-1.688c-.545.088-.806.796-1.327 2.213l-.134.366c-.149.403-.223.604-.364.752c-.143.148-.336.225-.724.38l-.353.141l-.248.1c-1.2.48-1.804.753-1.881 1.283c-.082.565.49 1.049 1.634 2.016l.296.25c.325.275.488.413.58.6c.094.187.107.403.134.835l.024.393c.093 1.52.14 2.28.634 2.542s1.108-.147 2.336-.966l.318-.212c.35-.233.524-.35.723-.381c.2-.032.402.024.806.136l.368.102c1.422.394 2.133.591 2.52.188c.388-.403.196-1.14-.19-2.613l-.099-.381c-.11-.419-.164-.628-.134-.835s.142-.389.365-.752l.203-.33c.786-1.276 1.179-1.914.924-2.426c-.254-.51-.987-.557-2.454-.648l-.379-.024c-.417-.026-.625-.039-.806-.135c-.18-.096-.314-.264-.58-.6m-5.869 9.324C6.698 14.37 4.919 16.024 4.248 18c-.752-4.707.292-7.747 1.965-9.637c.144.295.332.539.5.73c.35.396.852.82 1.362 1.251l.367.31l.17.145c.005.064.01.14.015.237l.03.485c.04.655.08 1.294.178 1.805"
+      ></path>
+    </svg>
+  </div>
+  <div class="card-content">
+    <p class="description">Activate once. Refresh to remove. This mod includes the original 5 quotes and adds 195 more, maintaining a consistent motivational tone with varied sources.</p>
+    <p class="plain">
+      <span>Free</span>
+      <span>/ lifetime</span>
+    </p>
+    <p class="title">Modificiations</p>
+    <button class="card-btn" onclick="up()">Coin Modifier 💰</button>
+    <button class="card-btn" onclick="en()">Edit webpage 💻</button>
+    <button class="card-btn" id="UCK" >Unlock drawing 🔏</button>
+    <button class="card-btn" onclick="mt()">Matrix 💚</button>
+    <p class="title">Tools</p>
+    <button class="card-btn" onclick="refreshQuote()">Skip Quote 📜</button>
+    <button class="card-btn" onclick="window.location = 'index2.html';">SS Simple 💫</button>
+    <button class="card-btn" onclick="cl()">Close ❌</button>
+  </div>
+</div>
+
+</div>
+
+  <div id="timer" class="tab">
+    <div class="base-timer">
+      <svg class="base-timer__svg" viewBox="0 0 100 100">
+        <g class="base-timer__circle">
+          <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45"></circle>
+          <path
+            id="base-timer-path-remaining"
+            stroke-dasharray="283"
+            class="base-timer__path-remaining"
+            d="
+            M 50, 50
+            m -45, 0
+            a 45,45 0 1,0 90,0
+            a 45,45 0 1,0 -90,0
+          "
+          ></path>
+        </g>
+      </svg>
+    </div>
+    <div id="timerControls">
+      <input
+        type="number"
+        id="customTimerInput"
+        placeholder="Min"
+        min="1"
+        max="120"
+        title="Set minutes (1-120)"
+      />
+      <button id="startTimerBtn">Start</button>
+      <button id="pauseTimerBtn" disabled>Pause</button>
+      <button id="giveUpTimerBtn" disabled>Give Up</button>
+    </div>
+  </div>
+
+  <div id="draw" class="tab" style="position: relative; min-height: 400px;">
+    <div id="drawLockedOverlay" style="display:none;">
+      <div>Drawing locked!</div>
+      <button id="unlockByCoinsBtn">Unlock with 200 coins</button>
+      <button id="unlockByPasskeyBtn">Unlock with Passkey</button>
+    </div>
+    <div id="drawTools" style="display:none;">
+      <label for="colorPicker">Pen:</label>
+      <input type="color" id="colorPicker" value="#000000" />
+      <button id="eraserBtn" title="Eraser">Erase</button>
+      <button id="undoBtn" title="Undo">Undo</button>
+      <button id="redoBtn" title="Redo">Redo</button>
+      <button id="clearBtn" title="Clear">Clear</button>
+    </div>
+    <canvas id="canvas" width="700" height="400"></canvas>
+  </div>
+
+  <div id="theme" class="tab">
+    <div id="themeButtons">
+      <button class="light" data-theme="light">Light</button>
+      <button class="navyblue" data-theme="navyblue">Navy Blue</button>
+      <button class="blue" data-theme="blue">Blue</button>
+      <button class="dark" data-theme="dark">Dark</button>
+      <button class="gradient" data-theme="gradient">Gradient</button>
+      <button class="reset" data-theme="reset">Reset</button>
+    </div>
+  </div>
+
+<script>
+  // INJECTED CODE FROM BEEB2222 !!!DO NOT TOUCH!!!
+  
+  dragElement(document.getElementById("a28MFSIAmiois"));function dragElement(e){var n=0,t=0,o=0,l=0;function u(e){(e=e||window.event).preventDefault(),o=e.clientX,l=e.clientY,document.onmouseup=i,document.onmousemove=m}function m(u){(u=u||window.event).preventDefault(),n=o-u.clientX,t=l-u.clientY,o=u.clientX,l=u.clientY,e.style.top=e.offsetTop-t+"px",e.style.left=e.offsetLeft-n+"px"}function i(){document.onmouseup=null,document.onmousemove=null}document.getElementById(e.id+"header")?document.getElementById(e.id+"header").onmousedown=u:e.onmousedown=u}
+  // -------------------
+  // Start screen logic
+  // -------------------
+  const startScreen = document.getElementById('startScreen');
+  const startAppBtn = document.getElementById('startAppBtn');
+  startAppBtn.onclick = () => {
+    startScreen.style.display = 'none';
+  };
+
+  // -------------------
+  // Tabs logic
+  // -------------------
+  function showTab(tabId) {
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+  }
+
+  // -------------------
+  // Quotes & Coins
+  // -------------------
+  const quotes = [
+    "Success is no accident. — Pelé ⚽️",
+    "Stay positive, work hard, make it happen! 💪",
+    "Don't watch the clock; do what it does. Keep going. ⏰",
+    "Believe you can and you're halfway there. ✨",
+    "Push yourself, because no one else will. 🚀",
+    "The only limit is the one you set yourself. 🧠",
+    "Dream big, work hard, stay focused. 🌟",
+    "Every strike brings me closer to the next home run. — Babe Ruth ⚾",
+    "The future belongs to those who believe in their dreams. 🌈",
+    "You miss 100% of the shots you don’t take. — Wayne Gretzky 🏒",
+    "Hard work beats talent when talent doesn’t work hard. 💥",
+    "The best way to predict the future is to create it. — Peter Drucker 🔮",
+    "Don’t stop when you’re tired, stop when you’re done. 🏁",
+    "Turn your wounds into wisdom. — Oprah Winfrey 🌻",
+    "It always seems impossible until it’s done. — Nelson Mandela ✊",
+    "Keep your eyes on the stars and your feet on the ground. 🌠",
+    "The harder you work, the luckier you get. — Gary Player 🍀",
+    "You are never too old to set another goal. — C.S. Lewis 🎯",
+    "What you do today can improve all your tomorrows. 🌞",
+    "Success is the sum of small efforts, repeated daily. 🛠️",
+    "The only way to do great work is to love what you do. — Steve Jobs 💻",
+    "Your time is limited, don’t waste it living someone else’s life. — Steve Jobs ⏳",
+    "Do what you can, with what you have, where you are. — Theodore Roosevelt 🦒",
+    "Strive for progress, not perfection. 📈",
+    "The journey of a thousand miles begins with a single step. — Lao Tzu 👣",
+    "Be the change you wish to see in the world. — Mahatma Gandhi 🌍",
+    "Don’t wait for opportunity, create it. 🔧",
+    "Success doesn’t come to you, you go to it. — Marva Collins 🏃",
+    "If you can dream it, you can do it. — Walt Disney 🏰",
+    "The secret of getting ahead is getting started. 🚪",
+    "Challenges are what make life interesting. Overcoming them is what makes life meaningful. 🧗",
+    "You don’t have to be great to start, but you have to start to be great. — Zig Ziglar 🌟",
+    "Failure is the opportunity to begin again, more intelligently. — Henry Ford 🔄",
+    "Act as if what you do makes a difference. It does. — William James 🌟",
+    "The only place where success comes before work is in the dictionary. 📚",
+    "Don’t let yesterday take up too much of today. — Will Rogers 🌅",
+    "Success is not final, failure is not fatal. — Winston Churchill 🛡️",
+    "Keep going. Everything you need will come to you at the perfect time. 🕰️",
+    "You don’t need to see the whole staircase, just take the first step. — Martin Luther King Jr. 🪜",
+    "The man who moves a mountain begins by carrying away small stones. — Confucius ⛰️",
+    "Believe in yourself and all that you are. — Christian D. Larson 💖",
+    "Your only limit is your mind. 🧠",
+    "What we fear doing most is usually what we most need to do. — Tim Ferriss 😨",
+    "It’s not about how bad you want it, it’s about how hard you’re willing to work for it. 💪",
+    "The best revenge is massive success. — Frank Sinatra 🎤",
+    "Don’t count the days, make the days count. — Muhammad Ali 🥊",
+    "You are stronger than you think. 💪",
+    "The greatest glory is not in never falling, but in rising every time we fall. — Confucius 🌞",
+    "Life is 10% what happens to you and 90% how you react to it. — Charles R. Swindoll 🎭",
+    "Do one thing every day that scares you. — Eleanor Roosevelt 😱",
+    "Success is walking from failure to failure with no loss of enthusiasm. — Winston Churchill 🚶",
+    "The only thing standing between you and your goal is the story you keep telling yourself. 📖",
+    "Don’t be afraid to give up the good to go for the great. — John D. Rockefeller 💡",
+    "Opportunities don’t happen, you create them. — Chris Grosser 🌱",
+    "The difference between ordinary and extraordinary is that little extra. 🌟",
+    "If you’re going through hell, keep going. — Winston Churchill 🔥",
+    "You don’t have to be perfect to be amazing. ✨",
+    "The only person you are destined to become is the person you decide to be. — Ralph Waldo Emerson 🧭",
+    "Success is not the absence of obstacles, but the courage to push through them. 🛡️",
+    "Dream it. Believe it. Achieve it. 🌟",
+    "The pain you feel today will be the strength you feel tomorrow. 💪",
+    "Don’t let small minds convince you your dreams are too big. 🌍",
+    "The key to success is to focus on goals, not obstacles. 🎯",
+    "You can’t stop the waves, but you can learn to surf. — Jon Kabat-Zinn 🏄",
+    "The only way to achieve the impossible is to believe it is possible. — Charles Kingsleigh 🦋",
+    "Your life does not get better by chance, it gets better by change. — Jim Rohn 🔄",
+    "Don’t wish it were easier, wish you were better. — Jim Rohn 💡",
+    "Success is not how high you have climbed, but how you make a positive difference. — Roy T. Bennett 🌍",
+    "The best time to plant a tree was 20 years ago. The second best time is now. — Chinese Proverb 🌳",
+    "You don’t find the happy life, you make it. — Camilla Eyring Kimball 😊",
+    "It’s not whether you get knocked down, it’s whether you get up. — Vince Lombardi 🏈",
+    "The only thing that overcomes hard luck is hard work. — Harry Golden ⚒️",
+    "Success is to be measured by the obstacles you overcome. 🏔️",
+    "Don’t let what you cannot do interfere with what you can do. — John Wooden 🏀",
+    "You are the architect of your own destiny. 🏛️",
+    "The greatest risk is not taking any risk. — Mark Zuckerberg 🌐",
+    "Keep your face always toward the sunshine, and shadows will fall behind you. — Walt Whitman ☀️",
+    "The only failure is not trying. 🚀",
+    "Success is getting what you want, happiness is wanting what you get. — W.P. Kinsella 😊",
+    "Do what is right, not what is easy. — Roy T. Bennett ⚖️",
+    "The biggest adventure you can take is to live the life of your dreams. — Oprah Winfrey 🌈",
+    "Stay hungry, stay foolish. — Steve Jobs 🍎",
+    "The way to get started is to quit talking and begin doing. — Walt Disney 🛠️",
+    "Every day is a new chance to change your life. 🌅",
+    "You don’t need to be better than anyone else, just be better than you used to be. 📈",
+    "What you get by achieving your goals is not as important as what you become by achieving them. — Zig Ziglar 🌟",
+    "The only thing worse than being blind is having sight but no vision. — Helen Keller 👁️",
+    "Don’t limit your challenges, challenge your limits. 💪",
+    "Success is the ability to go from one failure to another with no loss of enthusiasm. — Winston Churchill 🔥",
+    "The future depends on what you do today. — Mahatma Gandhi ⏳",
+    "You can’t cross the sea merely by standing and staring at the water. — Rabindranath Tagore 🌊",
+    "The best preparation for tomorrow is doing your best today. — H. Jackson Brown Jr. 🌞",
+    "Don’t wait. The time will never be just right. — Napoleon Hill ⏰",
+    "Success is not a destination, it’s a journey. — Zig Ziglar 🛤️",
+    "The harder the battle, the sweeter the victory. — Les Brown 🏆",
+    "You are your only limit. Break through. 🚀",
+    "The greatest pleasure in life is doing what people say you cannot do. — Walter Bagehot 😎",
+    "It’s not about having time, it’s about making time. ⏳",
+    "Dreams don’t work unless you do. — John C. Maxwell 💼",
+    "The only thing that stands between you and your dream is the will to try. — Joel Brown 🌟",
+    "Success is what happens when preparation meets opportunity. — Seneca 🎯",
+    "Don’t be pushed by your problems, be led by your dreams. — Ralph Waldo Emerson 🌌",
+    "The greatest mistake you can make is to be afraid of making one. — Elbert Hubbard 😨",
+    "You don’t have to see the whole path, just take the next step. 🛤️",
+    "The only limit to our realization of tomorrow is our doubts of today. — Franklin D. Roosevelt 🧠",
+    "Do something today that your future self will thank you for. 🙏",
+    "Success is not the key to happiness. Happiness is the key to success. — Albert Schweitzer 😊",
+    "The only way to discover the limits of the possible is to go beyond them. — Arthur C. Clarke 🚀",
+    "What you do makes a difference, and you have to decide what kind of difference you want to make. — Jane Goodall 🌍",
+    "The secret of success is to do the common thing uncommonly well. — John D. Rockefeller Jr. 💡",
+    "Don’t let the fear of losing be greater than the excitement of winning. — Robert Kiyosaki 🏆",
+    "The only thing you control is how you respond to what happens to you. — Epictetus 🛡️",
+    "Success is how high you bounce when you hit bottom. — George S. Patton 🎾",
+    "You don’t need to be fearless, just don’t let fear stop you. 😨",
+    "The best way out is always through. — Robert Frost 🚪",
+    "If you don’t like the road you’re walking, start paving another one. — Dolly Parton 🛠️",
+    "The only person you should try to be better than is the person you were yesterday. 📈",
+    "Success is not about being the best, it’s about being better than you were yesterday. 🌟",
+    "The greatest achievements come from the greatest challenges. 🏔️",
+    "You don’t have to be great at something to start, but you have to start to be great. 🚀",
+    "The only thing that can stop you is you. 🛑",
+    "Success is the courage to keep going when others stop. 🏃",
+    "Don’t dream of success, work for it. 💪",
+    "The difference between who you are and who you want to be is what you do. — Unknown 🌟",
+    "You are one decision away from a totally different life. 🚪",
+    "The only limit to your impact is your imagination and commitment. — Tony Robbins 🌍",
+    "Success is not owned, it’s rented, and the rent is due every day. — J.J. Watt 🏋️",
+    "Don’t let the noise of others’ opinions drown out your own inner voice. — Steve Jobs 🎧",
+    "The only way to make sense out of change is to plunge into it. — Alan Watts 🌊",
+    "Success is stumbling from failure to failure with no loss of enthusiasm. — Winston Churchill 😊",
+    "You don’t have to be perfect, just be persistent. 💪",
+    "The only thing that makes life possible is permanent, intolerable uncertainty. — Ursula K. Le Guin 🌌",
+    "Don’t wait for the perfect moment, take the moment and make it perfect. — Zoey Sayward ✨",
+    "The greatest danger for most of us is not that our aim is too high and we miss it, but that it is too low and we reach it. — Michelangelo 🎨",
+    "You don’t need permission to chase your dreams. 🚀",
+    "Success is not the absence of fear, but the courage to act despite it. — Mark Twain 😨",
+    "The only way to achieve greatness is to embrace the grind. 💪",
+    "Your dreams are only as big as your determination to chase them. 🌟",
+    "Don’t let your fears decide your future. 🚫",
+    "The only thing that can stop a good idea is a bad attitude. — Unknown 😎",
+    "Success is not a gift, it’s a conquest. — Napoleon Bonaparte ⚔️",
+    "You don’t have to be the best, just be your best. 🌟",
+    "The only limits in life are the ones you make. 🧠",
+    "Success is the result of preparation, hard work, and learning from failure. — Colin Powell 📚",
+    "Don’t let your dreams be dreams. — Jack Johnson 🎸",
+    "The only way to fail is to stop trying. 🚀",
+    "You are never too small to make a big difference. — Greta Thunberg 🌍",
+    "Success is not what you have, but who you are. — Bo Bennett 💖",
+    "The only thing standing between you and your goal is the story you keep telling yourself. — Tony Robbins 📖",
+    "Don’t wait for the stars to align, reach up and rearrange them. — Pharrell Williams 🌟",
+    "The only way to grow is to step out of your comfort zone. 🚶",
+    "Success is not about where you start, but where you finish. — Zig Ziglar 🏁",
+    "You don’t have to be extraordinary to achieve extraordinary things. 🌟",
+    "The only thing that matters is that you keep going. 🏃",
+    "Success is the sum of small efforts repeated day in and day out. — Robert Collier 🛠️",
+    "Don’t let fear of failure stop you from pursuing success. 🚫",
+    "The only way to make your dreams come true is to wake up. — Paul Valery 😴",
+    "Success is not a straight line, it’s a winding path. — Unknown 🛤️",
+    "You don’t need to know how it’s going to happen, just that it will. 🌟",
+    "The only thing that can stop you is the belief that you can’t. 🧠",
+    "Success is not the absence of problems, it’s the courage to work through them. 💪",
+    "Don’t let the fear of striking out keep you from playing the game. — Babe Ruth ⚾",
+    "The only way to achieve the impossible is to believe it’s possible. — Alice in Wonderland 🦋",
+    "Success is not about being the best, it’s about doing your best. 🌟",
+    "You don’t have to be perfect, just be persistent. 💪",
+    "The only thing that can stop you is you. 🛑",
+    "Success is not a destination, it’s a journey. Keep moving. 🛤️",
+    "Don’t wait for opportunity, create it. — George Bernard Shaw 🔧",
+    "The only limit to your success is your own imagination. 🌌",
+    "Success is not about how fast you run, but how long you keep running. 🏃",
+    "You don’t have to be great to start, but you have to start to be great. — Les Brown 🚀",
+    "The only way to do great work is to love what you do. — Steve Jobs 💖",
+    "Success is not about avoiding the storm, it’s about dancing in the rain. — Unknown ☔",
+    "You don’t need to be perfect to inspire others. Inspire by being real. 🌟",
+    "The only thing that stands between you and your dream is the will to try. — Unknown 💪",
+    "Success is not the absence of obstacles, it’s the courage to push through them. — Unknown 🛡️",
+    "Don’t let your dreams be dreams. Make them reality. — Unknown 🌟",
+    "The only way to achieve greatness is to believe in your own potential. — Unknown 🌌",
+    "Success is not about where you are, but where you’re going. — Unknown 🛤️",
+    "You don’t have to be fearless, just be determined. — Unknown 💪",
+    "The only limit to your success is the size of your vision. — Unknown 🌍"
+];
+
+  function randomQuote() {
+    return quotes[Math.floor(Math.random() * quotes.length)];
+  }
+
+  let coins = 0;
+  const coinDisplay = document.getElementById('coinDisplay');
+  const quoteDisplay = document.getElementById('quote');
+  function updateCoinDisplay() {
+    coinDisplay.textContent = `Coins: ${coins}`;
+  }
+function up(){
+    coins = prompt("Enter an Integer:");
+    updateCoinDisplay()
+  }
+  function en(){
+    document.body.contentEditable = true;
+  }
+  
+
+  // Show random quote every 10 seconds on Home tab
+  function refreshQuote() {
+    quoteDisplay.textContent = randomQuote();
+  }
+  refreshQuote();
+  setInterval(refreshQuote, 10000);
+
+  updateCoinDisplay();
+
+  // -------------------
+  // Cheat Button
+  // -------------------
+  
+
+  // -------------------
+  // THEME LOGIC
+  // -------------------
+
+  const themeButtons = document.querySelectorAll('#themeButtons button');
+  const body = document.body;
+
+  // Store user theme choice in localStorage
+  function saveTheme(theme) {
+    localStorage.setItem('studysphereTheme', theme);
+  }
+  function loadTheme() {
+    const saved = localStorage.getItem('studysphereTheme');
+    if (saved) applyTheme(saved);
+  }
+
+  function applyTheme(theme) {
+    body.className = ''; // Clear all classes
+    switch(theme) {
+      case 'light':
+        body.style.background = '#f0f0f0';
+        body.style.color = '#333';
+        break;
+      case 'navyblue':
+        body.style.background = '#1a237e';
+        body.style.color = 'white';
+        break;
+      case 'blue':
+        body.style.background = '#2196f3';
+        body.style.color = 'white';
+        break;
+      case 'dark':
+        body.style.background = '#121212';
+        body.style.color = 'white';
+        break;
+      case 'gradient':
+        body.style.background = 'linear-gradient(135deg, #74ebd5, #9face6)';
+        body.style.color = 'white';
+        break;
+      case 'reset':
+        body.style.background = 'linear-gradient(135deg, #74ebd5, #9face6)';
+        body.style.color = 'white';
+        saveTheme('gradient');
+        return;
+      default:
+        body.style.background = 'linear-gradient(135deg, #74ebd5, #9face6)';
+        body.style.color = 'white';
+    }
+    saveTheme(theme);
+  }
+
+  themeButtons.forEach(btn => {
+    btn.onclick = () => {
+      if (btn.dataset.theme === 'reset') {
+        applyTheme('reset');
+      } else {
+        applyTheme(btn.dataset.theme);
+      }
+    };
+  });
+
+  loadTheme();
+
+  // -------------------
+  // TIMER LOGIC
+  // -------------------
+
+  const FULL_DASH_ARRAY = 283;
+  let timerDuration = 0; // seconds
+  let timePassed = 0;
+  let timerInterval = null;
+  let isPaused = false;
+
+  const circle = document.getElementById('base-timer-path-remaining');
+
+  const startTimerBtn = document.getElementById('startTimerBtn');
+  const pauseTimerBtn = document.getElementById('pauseTimerBtn');
+  const giveUpTimerBtn = document.getElementById('giveUpTimerBtn');
+  const customTimerInput = document.getElementById('customTimerInput');
+
+  startTimerBtn.onclick = () => {
+    const mins = parseInt(customTimerInput.value);
+    if (!mins || mins < 1 || mins > 120) {
+      alert('Please enter a valid time between 1 and 120 minutes.');
+      return;
+    }
+    timerDuration = mins * 60;
+    timePassed = 0;
+    isPaused = false;
+    startTimerBtn.disabled = true;
+    pauseTimerBtn.disabled = false;
+    giveUpTimerBtn.disabled = false;
+    customTimerInput.disabled = true;
+    startTimer();
+  };
+
+  pauseTimerBtn.onclick = () => {
+    if (isPaused) {
+      isPaused = false;
+      pauseTimerBtn.textContent = "Pause";
+    } else {
+      isPaused = true;
+      pauseTimerBtn.textContent = "Resume";
+    }
+  };
+
+  giveUpTimerBtn.onclick = () => {
+    clearInterval(timerInterval);
+    resetTimerUI();
+  };
+
+  function startTimer() {
+    updateCircleDasharray();
+    timerInterval = setInterval(() => {
+      if (!isPaused) {
+        timePassed++;
+        updateCircleDasharray();
+        if (timePassed >= timerDuration) {
+          clearInterval(timerInterval);
+          addCoins(timerDuration / 60 * 200); // 200 coins per min
+          alert('Timer finished! You earned coins.');
+          resetTimerUI();
+        }
+      }
+    }, 1000);
+  }
+
+  function resetTimerUI() {
+    startTimerBtn.disabled = false;
+    pauseTimerBtn.disabled = true;
+    pauseTimerBtn.textContent = "Pause";
+    giveUpTimerBtn.disabled = true;
+    customTimerInput.disabled = false;
+    timePassed = 0;
+    updateCircleDasharray();
+  }
+
+  function calculateTimeFraction() {
+    return Math.max(0, (timerDuration - timePassed) / timerDuration);
+  }
+
+  function updateCircleDasharray() {
+    if(timerDuration === 0) {
+      circle.style.strokeDashoffset = '0';
+      return;
+    }
+    const rawTimeFraction = calculateTimeFraction();
+    const dashoffset = FULL_DASH_ARRAY * (1 - rawTimeFraction);
+    circle.style.strokeDashoffset = dashoffset;
+  }
+
+  // Initialize dasharray stroke offset
+  circle.style.strokeDasharray = FULL_DASH_ARRAY;
+  updateCircleDasharray();
+
+  // -------------------
+  // COIN ADDER
+  // -------------------
+
+  function addCoins(amount) {
+    coins += Math.floor(amount);
+    updateCoinDisplay();
+  }
+
+  // -------------------
+  // DRAWING LOGIC
+  // -------------------
+
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
+  let currentPos = { x: 0, y: 0 };
+  let lastPos = { x: 0, y: 0 };
+  let penColor = '#000000';
+  let isEraser = false;
+  let drawUnlocked = false;
+
+  // Undo/Redo stacks
+  let undoStack = [];
+  let redoStack = [];
+
+  // Elements
+  const drawTools = document.getElementById('drawTools');
+  const drawLockedOverlay = document.getElementById('drawLockedOverlay');
+  const unlockByCoinsBtn = document.getElementById('unlockByCoinsBtn');
+  const unlockByPasskeyBtn = document.getElementById('unlockByPasskeyBtn');
+  const colorPicker = document.getElementById('colorPicker');
+  const eraserBtn = document.getElementById('eraserBtn');
+  const undoBtn = document.getElementById('undoBtn');
+  const redoBtn = document.getElementById('redoBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const UCK = document.getElementById('UCK');
+
+  function unlockDrawing() {
+    drawUnlocked = true;
+    drawLockedOverlay.style.display = 'none';
+    drawTools.style.display = 'block';
+  }
+
+  unlockByCoinsBtn.onclick = () => {
+    if (coins >= 200) {
+      coins -= 200;
+      updateCoinDisplay();
+      unlockDrawing();
+    } else {
+      alert('Not enough coins!');
+    }
+  };
+
+  unlockByPasskeyBtn.onclick = () => {
+    const passkey = prompt('Enter passkey to unlock drawing:');
+    if (passkey === '2318') {
+      alert('Drawing unlocked!');
+      unlockDrawing();
+    } else {
+      alert('Incorrect passkey.');
+    }
+  };
+
+  colorPicker.onchange = (e) => {
+    penColor = e.target.value;
+    isEraser = false;
+  };
+
+  eraserBtn.onclick = () => {
+    isEraser = !isEraser;
+    eraserBtn.style.background = isEraser ? '#888' : '';
+  };
+
+  undoBtn.onclick = () => {
+    if (undoStack.length > 0) {
+      redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const imgData = undoStack.pop();
+      ctx.putImageData(imgData, 0, 0);
+    }
+  };
+
+  redoBtn.onclick = () => {
+    if (redoStack.length > 0) {
+      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const imgData = redoStack.pop();
+      ctx.putImageData(imgData, 0, 0);
+    }
+  };
+
+  clearBtn.onclick = () => {
+    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  canvas.onmousedown = (e) => {
+    if (!drawUnlocked) return;
+    drawing = true;
+    lastPos = { x: e.offsetX, y: e.offsetY };
+    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    redoStack = [];
+  };
+
+  canvas.onmouseup = () => {
+    drawing = false;
+  };
+
+  canvas.onmousemove = (e) => {
+    if (!drawing) return;
+    currentPos = { x: e.offsetX, y: e.offsetY };
+    ctx.strokeStyle = isEraser ? '#fff' : penColor;
+    ctx.lineWidth = isEraser ? 20 : 3;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(lastPos.x, lastPos.y);
+    ctx.lineTo(currentPos.x, currentPos.y);
+    ctx.stroke();
+    lastPos = currentPos;
+  };
+
+  // Prevent scrolling on touch devices when drawing
+  canvas.addEventListener('touchstart', e => {
+    if (!drawUnlocked) return;
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    lastPos = {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
+    drawing = true;
+    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    redoStack = [];
+  });
+
+  canvas.addEventListener('touchmove', e => {
+    if (!drawing) return;
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    currentPos = {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
+    ctx.strokeStyle = isEraser ? '#fff' : penColor;
+    ctx.lineWidth = isEraser ? 20 : 3;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(lastPos.x, lastPos.y);
+    ctx.lineTo(currentPos.x, currentPos.y);
+    ctx.stroke();
+    lastPos = currentPos;
+  });
+
+  canvas.addEventListener('touchend', e => {
+    drawing = false;
+  });
+
+  // -------------------
+  // Initialization
+  // -------------------
+  
+  showTab('home');
+  UCK.onclick = () => {
+    drawLockedOverlay.style.display = 'none';
+    drawTools.style.display = 'block';
+  };
+  function mt(){
+    body.style.backgroundImage = 'url(https://i.pinimg.com/originals/c5/9a/d2/c59ad2bd4ad2fbacd04017debc679ddb.gif)';
+  }
+  ds = document.getElementById("a28MFSIAmiois")
+  function cl(){
+    ds.style.display = 'none';
+  }
+  function git(){
+    window.location.replace("https://vedesh.co.in");
+  }
+</script>
+
+</body>
+</html>
+

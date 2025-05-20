@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StudySphere v1.5</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Outfit", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+      margin: 0; padding: 0;
+    }
+    body, html {
+      height: 100%;
+      background: #e8e8e8;
+      color: rgb(0, 0, 0);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background: #e8e8e8;
+      padding: 15px;
+      font-size: 2.2em;
+      font-weight: bold;
+      text-align: center;
+      user-select: none;
+    }
+    nav {
+      background: #e8e8e8;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+    }
+    nav button {
+      background: #e8e8e8;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 15px;
+      font-size: 1em;
+      color: rgb(0, 0, 0);
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s;
+      border: 1px solid #e8e8e8;
+  transition: all 0.3s;
+  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+
+    }
+    nav button:hover {
+      background: #e8e8e8;
+    }
+    .tab {
+      flex: 1;
+      padding: 20px;
+      display: none;
+      overflow-y: auto;
+      background: #e8e8e8;
+    }
+    .tab.active {
+      display: block;
+    }
+    #coinDisplay {
+      font-size: 1.3em;
+      margin-bottom: 15px;
+      text-align: center;
+      background: linear-gradient(177deg,rgba(255, 200, 0, 1) 0%, rgba(246, 255, 79, 1) 35%, rgba(255, 145, 0, 1) 100%);
+      background-clip: text;
+    }
+    #quote {
+      font-style: italic;
+      font-size: 1.4em;
+      text-align: center;
+      margin-top: 20px;
+    }
+    /* Start screen */
+    #startScreen {
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: #e8e8e8;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: rgb(0, 0, 0);
+      font-size: 2.5em;
+      z-index: 1000;
+      user-select: none;
+    }
+    #startScreen button {
+      margin-top: 30px;
+      padding: 15px 40px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 12px;
+      background: #e8e8e8;
+      color: rgb(0, 0, 0);
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s;
+      border: 1px solid #e8e8e8;
+  transition: all 0.3s;
+  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+    }
+    #startScreen button:hover {
+      background: #e8e8e8;
+      border: 1px solid #e8e8e8;
+  transition: all 0.3s;
+  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+    }
+
+    /* Timer Circular */
+
+    .base-timer {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin: 30px auto 10px;
+    }
+    .base-timer__svg {
+      transform: scaleX(-1);
+      width: 220px;
+      height: 220px;
+    }
+    .base-timer__circle {
+      fill: none;
+      stroke: none;
+    }
+    .base-timer__path-elapsed {
+      stroke-width: 12px;
+      stroke: rgba(71, 71, 71, 0.2);
+    }
+    .base-timer__path-remaining {
+      stroke-width: 12px;
+      stroke-linecap: round;
+      stroke: #000000;
+      transition: 1s linear stroke-dashoffset;
+      transform-origin: center;
+    }
+
+    /* Timer controls */
+    #timerControls {
+      text-align: center;
+      margin-top: 15px;
+    }
+    #timerControls button {
+      background: #e8e8e8;
+      border: none;
+      padding: 10px 15px;
+      margin: 0 5px;
+      border-radius: 8px;
+      color: rgb(0, 0, 0);
+      cursor: pointer;
+      font-size: 1em;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    #timerControls button:hover:not(:disabled) {
+      background: #e8e8e8;
+      border: 1px solid #e8e8e8;
+  transition: all 0.3s;
+  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+    }
+    #timerControls button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    #customTimerInput {
+      width: 70px;
+      padding: 7px;
+      font-size: 1em;
+      border-radius: 8px;
+      border: none;
+      margin-right: 10px;
+      text-align: center;
+    }
+
+    /* Cheat Button */
+    #cheatBtn {
+      border-radius: 800px;
+      opacity: 0.5;
+      user-select: none;
+      cursor: pointer;
+      padding:10px;
+      background: #e8e8e8;
+      border: none;
+      color: rgb(0, 0, 0);
+      font-size: 1em;
+      margin: 10px auto;
+      display: block;
+      transition: opacity 0.3s;
+      border: 1px solid #e8e8e8;
+  transition: all 0.3s;
+  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+    }
+    #cheatBtn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    /* Theme tab */
+    #themeButtons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    #themeButtons button {
+      padding: 10px 20px;
+      font-size: 1.1em;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      user-select: none;
+      color: rgb(0, 0, 0);
+      transition: background-color 0.3s;
+    }
+    #themeButtons button.light { background: #f0f0f0; color: #333;}
+    #themeButtons button.navyblue { background: #1a237e; }
+    #themeButtons button.blue { background: #2196f3; }
+    #themeButtons button.dark { background: #121212; }
+    #themeButtons button.gradient { background: linear-gradient(135deg, #74ebd5, #9face6); color: white; }
+    #themeButtons button.reset { background: #888; }
+
+    /* Draw Tab */
+
+    #drawLockedOverlay {
+      position: absolute;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.6);
+      color: rgb(0, 0, 0);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2em;
+      z-index: 10;
+      user-select: none;
+    }
+    #drawLockedOverlay button {
+      
+      margin-top: 12px;
+      background: #e8e8e8;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: rgb(0, 0, 0);
+      user-select: none;
+      border: 1px solid #e8e8e8;
+  transition: all 0.3s;
+  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+    }
+    #drawTools {
+      margin-bottom: 12px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      
+    }
+    #drawTools > * {
+      font-size: 1em;
+    }
+    #drawTools label {
+      user-select: none;
+    }
+    #drawTools input[type="color"],
+    #drawTools button {
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+      padding: 7px 12px;
+      transition: background-color 0.3s;
+      border: 1px solid #e8e8e8;
+  transition: all 0.3s;
+  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+    }
+    #drawTools button:hover {
+      background: #e8e8e8;
+      color: rgb(0, 0, 0);
+    }
+    canvas#canvas {
+      border: 2px solid white;
+      background: white;
+      display: block;
+      margin: 0 auto 20px;
+      touch-action: none;
+      border-radius: 12px;
+      border: 1px solid #e8e8e8;
+  transition: all 0.3s;
+  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+    }
+    button:active {
+  color: #666;
+  box-shadow: inset 4px 4px 12px #c5c5c5, inset -4px -4px 12px #ffffff;
+}
+  </style>
+</head>
+<body>
+
+  <!-- Start Screen -->
+  <div id="startScreen">
+    <div>Welcome to SS Simple!</div>
+    <button id="startAppBtn">Start</button>
+  </div>
+
+  <header>SS Simple</header>
+  <nav>
+    <button onclick="showTab('home')">Home</button>
+    <button onclick="showTab('timer')">Timer</button>
+    <button onclick="showTab('draw')">Draw</button>
+  </nav>
+
+  <!-- Tabs -->
+  <div id="home" class="tab active">
+    <div id="coinDisplay" style="background: linear-gradient(177deg,rgba(255, 200, 0, 1) 0%, rgba(246, 255, 79, 1) 35%, rgba(255, 145, 0, 1) 100%);
+      background-clip: text;">StudyScore: 0</div>
+    <div id="quote"></div>
+    <!--<button id="cheatBtn" title="Cheat (enter passkey)">Cheat</button> -->
+  </div>
+
+  <div id="timer" class="tab">
+    <div class="base-timer">
+      <svg class="base-timer__svg" viewBox="0 0 100 100">
+        <g class="base-timer__circle">
+          <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45"></circle>
+          <path
+            id="base-timer-path-remaining"
+            stroke-dasharray="283"
+            class="base-timer__path-remaining"
+            d="
+            M 50, 50
+            m -45, 0
+            a 45,45 0 1,0 90,0
+            a 45,45 0 1,0 -90,0
+          "
+          ></path>
+        </g>
+      </svg>
+    </div>
+    <div id="timerControls">
+      <input
+        type="number"
+        id="customTimerInput"
+        placeholder="Min"
+        min="1"
+        max="120"
+        title="Set minutes (1-120)"
+      />
+      <button id="startTimerBtn">Start</button>
+      <button id="pauseTimerBtn" disabled>Pause</button>
+      <button id="giveUpTimerBtn" disabled>Give Up</button>
+    </div>
+  </div>
+
+  <div id="draw" class="tab" style="position: relative; min-height: 400px;">
+    <div id="drawLockedOverlay" style="display:none;">
+      <div>Drawing locked!</div>
+      <button id="unlockByCoinsBtn">Unlock with 200 coins</button>
+      <button id="unlockByPasskeyBtn">Unlock with Passkey</button>
+    </div>
+    <div id="drawTools" style="display:none;">
+      <label for="colorPicker">Pen:</label>
+      <input type="color" id="colorPicker" value="#000000" />
+      <button id="eraserBtn" title="Eraser">Erase</button>
+      <button id="undoBtn" title="Undo">Undo</button>
+      <button id="redoBtn" title="Redo">Redo</button>
+      <button id="clearBtn" title="Clear">Clear</button>
+    </div>
+    <canvas id="canvas" width="700" height="400"></canvas>
+  </div>
+
+  <div id="theme" class="tab">
+    <div id="themeButtons">
+      <button class="light" data-theme="light">Light</button>
+      <button class="navyblue" data-theme="navyblue">Navy Blue</button>
+      <button class="blue" data-theme="blue">Blue</button>
+      <button class="dark" data-theme="dark">Dark</button>
+      <button class="gradient" data-theme="gradient">Gradient</button>
+      <button class="reset" data-theme="reset">Reset</button>
+    </div>
+  </div>
+
+<script>
+  // -------------------
+  // Start screen logic
+  // -------------------
+  const startScreen = document.getElementById('startScreen');
+  const startAppBtn = document.getElementById('startAppBtn');
+  startAppBtn.onclick = () => {
+    startScreen.style.display = 'none';
+  };
+
+  // -------------------
+  // Tabs logic
+  // -------------------
+  function showTab(tabId) {
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+  }
+
+  // -------------------
+  // Quotes & Coins
+  // -------------------
+  const quotes = [
+    "Success is no accident. — Pelé ⚽️",
+    "Stay positive, work hard, make it happen! 💪",
+    "Don't watch the clock; do what it does. Keep going. ⏰",
+    "Believe you can and you're halfway there. ✨",
+    "Push yourself, because no one else will. 🚀",
+  ];
+
+  function randomQuote() {
+    return quotes[Math.floor(Math.random() * quotes.length)];
+  }
+
+  let coins = 0;
+  const coinDisplay = document.getElementById('coinDisplay');
+  const quoteDisplay = document.getElementById('quote');
+
+  function updateCoinDisplay() {
+    coinDisplay.textContent = `Coins: ${coins}`;
+  }
+
+  // Show random quote every 10 seconds on Home tab
+  function refreshQuote() {
+    quoteDisplay.textContent = randomQuote();
+  }
+  refreshQuote();
+  setInterval(refreshQuote, 10000);
+
+  updateCoinDisplay();
+
+  // -------------------
+  // Cheat Button
+  // -------------------
+  const cheatBtn = document.getElementById('cheatBtn');
+  cheatBtn.onclick = () => {
+    const pass = prompt("Enter cheat passkey:");
+    if (pass === "2318") {
+      alert("Cheat activated! +500 coins");
+      coins += 500;
+      updateCoinDisplay();
+      if (!drawUnlocked) {
+        unlockDrawing();
+      }
+    } else {
+      alert("Incorrect passkey.");
+    }
+  };
+
+  // -------------------
+  // THEME LOGIC
+  // -------------------
+
+  const themeButtons = document.querySelectorAll('#themeButtons button');
+  const body = document.body;
+
+  // Store user theme choice in localStorage
+  function saveTheme(theme) {
+    localStorage.setItem('studysphereTheme', theme);
+  }
+  function loadTheme() {
+    const saved = localStorage.getItem('studysphereTheme');
+    if (saved) applyTheme(saved);
+  }
+
+  function applyTheme(theme) {
+    body.className = ''; // Clear all classes
+    switch(theme) {
+      case 'light':
+        body.style.background = '#f0f0f0';
+        body.style.color = '#333';
+        break;
+      case 'navyblue':
+        body.style.background = '#1a237e';
+        body.style.color = 'white';
+        break;
+      case 'blue':
+        body.style.background = '#2196f3';
+        body.style.color = 'white';
+        break;
+      case 'dark':
+        body.style.background = '#121212';
+        body.style.color = 'white';
+        break;
+      case 'gradient':
+        body.style.background = 'linear-gradient(135deg, #74ebd5, #9face6)';
+        body.style.color = 'white';
+        break;
+      case 'reset':
+        body.style.background = 'linear-gradient(135deg, #74ebd5, #9face6)';
+        body.style.color = 'white';
+        saveTheme('gradient');
+        return;
+      default:
+        body.style.background = 'linear-gradient(135deg, #74ebd5, #9face6)';
+        body.style.color = 'white';
+    }
+    saveTheme(theme);
+  }
+
+  themeButtons.forEach(btn => {
+    btn.onclick = () => {
+      if (btn.dataset.theme === 'reset') {
+        applyTheme('reset');
+      } else {
+        applyTheme(btn.dataset.theme);
+      }
+    };
+  });
+
+
+  // -------------------
+  // TIMER LOGIC
+  // -------------------
+
+  const FULL_DASH_ARRAY = 283;
+  let timerDuration = 0; // seconds
+  let timePassed = 0;
+  let timerInterval = null;
+  let isPaused = false;
+
+  const circle = document.getElementById('base-timer-path-remaining');
+
+  const startTimerBtn = document.getElementById('startTimerBtn');
+  const pauseTimerBtn = document.getElementById('pauseTimerBtn');
+  const giveUpTimerBtn = document.getElementById('giveUpTimerBtn');
+  const customTimerInput = document.getElementById('customTimerInput');
+
+  startTimerBtn.onclick = () => {
+    const mins = parseInt(customTimerInput.value);
+    if (!mins || mins < 1 || mins > 120) {
+      alert('Please enter a valid time between 1 and 120 minutes.');
+      return;
+    }
+    timerDuration = mins * 60;
+    timePassed = 0;
+    isPaused = false;
+    startTimerBtn.disabled = true;
+    pauseTimerBtn.disabled = false;
+    giveUpTimerBtn.disabled = false;
+    customTimerInput.disabled = true;
+    startTimer();
+  };
+
+  pauseTimerBtn.onclick = () => {
+    if (isPaused) {
+      isPaused = false;
+      pauseTimerBtn.textContent = "Pause";
+    } else {
+      isPaused = true;
+      pauseTimerBtn.textContent = "Resume";
+    }
+  };
+
+  giveUpTimerBtn.onclick = () => {
+    clearInterval(timerInterval);
+    resetTimerUI();
+  };
+
+  function startTimer() {
+    updateCircleDasharray();
+    timerInterval = setInterval(() => {
+      if (!isPaused) {
+        timePassed++;
+        updateCircleDasharray();
+        if (timePassed >= timerDuration) {
+          clearInterval(timerInterval);
+          addCoins(timerDuration / 60 * 200); // 200 coins per min
+          alert('Timer finished! You earned coins.');
+          resetTimerUI();
+        }
+      }
+    }, 1000);
+  }
+
+  function resetTimerUI() {
+    startTimerBtn.disabled = false;
+    pauseTimerBtn.disabled = true;
+    pauseTimerBtn.textContent = "Pause";
+    giveUpTimerBtn.disabled = true;
+    customTimerInput.disabled = false;
+    timePassed = 0;
+    updateCircleDasharray();
+  }
+
+  function calculateTimeFraction() {
+    return Math.max(0, (timerDuration - timePassed) / timerDuration);
+  }
+
+  function updateCircleDasharray() {
+    if(timerDuration === 0) {
+      circle.style.strokeDashoffset = '0';
+      return;
+    }
+    const rawTimeFraction = calculateTimeFraction();
+    const dashoffset = FULL_DASH_ARRAY * (1 - rawTimeFraction);
+    circle.style.strokeDashoffset = dashoffset;
+  }
+
+  // Initialize dasharray stroke offset
+  circle.style.strokeDasharray = FULL_DASH_ARRAY;
+  updateCircleDasharray();
+
+  // -------------------
+  // COIN ADDER
+  // -------------------
+
+  function addCoins(amount) {
+    coins += Math.floor(amount);
+    updateCoinDisplay();
+  }
+
+  // -------------------
+  // DRAWING LOGIC
+  // -------------------
+
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
+  let currentPos = { x: 0, y: 0 };
+  let lastPos = { x: 0, y: 0 };
+  let penColor = '#000000';
+  let isEraser = false;
+  let drawUnlocked = false;
+
+  // Undo/Redo stacks
+  let undoStack = [];
+  let redoStack = [];
+
+  // Elements
+  const drawTools = document.getElementById('drawTools');
+  const drawLockedOverlay = document.getElementById('drawLockedOverlay');
+  const unlockByCoinsBtn = document.getElementById('unlockByCoinsBtn');
+  const unlockByPasskeyBtn = document.getElementById('unlockByPasskeyBtn');
+  const colorPicker = document.getElementById('colorPicker');
+  const eraserBtn = document.getElementById('eraserBtn');
+  const undoBtn = document.getElementById('undoBtn');
+  const redoBtn = document.getElementById('redoBtn');
+  const clearBtn = document.getElementById('clearBtn');
+
+  function unlockDrawing() {
+    drawUnlocked = true;
+    drawLockedOverlay.style.display = 'none';
+    drawTools.style.display = 'block';
+  }
+
+  unlockByCoinsBtn.onclick = () => {
+    if (coins >= 200) {
+      coins -= 200;
+      updateCoinDisplay();
+      unlockDrawing();
+    } else {
+      alert('Not enough coins!');
+    }
+  };
+
+  unlockByPasskeyBtn.onclick = () => {
+    const passkey = prompt('Enter passkey to unlock drawing:');
+    if (passkey === '2318') {
+      alert('Drawing unlocked!');
+      unlockDrawing();
+    } else {
+      alert('Incorrect passkey.');
+    }
+  };
+
+  colorPicker.onchange = (e) => {
+    penColor = e.target.value;
+    isEraser = false;
+  };
+
+  eraserBtn.onclick = () => {
+    isEraser = !isEraser;
+    eraserBtn.style.background = isEraser ? '#888' : '';
+  };
+
+  undoBtn.onclick = () => {
+    if (undoStack.length > 0) {
+      redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const imgData = undoStack.pop();
+      ctx.putImageData(imgData, 0, 0);
+    }
+  };
+
+  redoBtn.onclick = () => {
+    if (redoStack.length > 0) {
+      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const imgData = redoStack.pop();
+      ctx.putImageData(imgData, 0, 0);
+    }
+  };
+
+  clearBtn.onclick = () => {
+    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  canvas.onmousedown = (e) => {
+    if (!drawUnlocked) return;
+    drawing = true;
+    lastPos = { x: e.offsetX, y: e.offsetY };
+    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    redoStack = [];
+  };
+
+  canvas.onmouseup = () => {
+    drawing = false;
+  };
+
+  canvas.onmousemove = (e) => {
+    if (!drawing) return;
+    currentPos = { x: e.offsetX, y: e.offsetY };
+    ctx.strokeStyle = isEraser ? '#fff' : penColor;
+    ctx.lineWidth = isEraser ? 20 : 3;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(lastPos.x, lastPos.y);
+    ctx.lineTo(currentPos.x, currentPos.y);
+    ctx.stroke();
+    lastPos = currentPos;
+  };
+
+  // Prevent scrolling on touch devices when drawing
+  canvas.addEventListener('touchstart', e => {
+    if (!drawUnlocked) return;
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    lastPos = {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
+    drawing = true;
+    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    redoStack = [];
+  });
+
+  canvas.addEventListener('touchmove', e => {
+    if (!drawing) return;
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    currentPos = {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
+    ctx.strokeStyle = isEraser ? '#fff' : penColor;
+    ctx.lineWidth = isEraser ? 20 : 3;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(lastPos.x, lastPos.y);
+    ctx.lineTo(currentPos.x, currentPos.y);
+    ctx.stroke();
+    lastPos = currentPos;
+  });
+
+  canvas.addEventListener('touchend', e => {
+    drawing = false;
+  });
+
+  // -------------------
+  // Initialization
+  // -------------------
+
+  showTab('home');
+</script>
+
+</body>
+</html>
+
